@@ -5,15 +5,17 @@ import com.solightingstats.handler.sql.impl.SimpleQueryInitializer;
 import com.solightingstats.handler.sql.model.EntityColumn;
 import com.solightingstats.handler.sql.model.EntityInfo;
 import com.solightingstats.handler.sql.model.enums.ColumnType;
+import com.solightingstats.model.ExportTable;
 import com.solightingstats.resolvers.json.JsonTablesFileResolver;
 import com.solightingstats.utils.FileUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         QueryInitializer queryInitializer = new SimpleQueryInitializer();
         
         queryInitializer.setStringValuesWrapper("'");
@@ -42,6 +44,8 @@ public class Main {
 
         File jsonTableFile = new File("/home/max/db/test.json");
         String text = FileUtil.getText(jsonTableFile);
-        JsonTablesFileResolver.
+        List<ExportTable> tables = JsonTablesFileResolver.getTables(text);
+        for (ExportTable table: tables)
+            System.out.println(table.getId() + " " + table.getName());
     }
 }
