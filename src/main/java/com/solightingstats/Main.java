@@ -42,7 +42,9 @@ public class Main {
         
         String resultQuery = queryInitializer.getInsertQuery(entityInfo,rowData);
 
-        File jsonTableFile = new File("/home/max/db/test.json");
+        ClassLoader classLoader = Main.class.getClassLoader();
+        
+        File jsonTableFile = new File(classLoader.getResource("json/tables.json").getFile());
         String text = FileUtil.getText(jsonTableFile);
         List<ExportTable> tables = JsonTablesFileResolver.getTables(text);
         for (ExportTable table: tables)
