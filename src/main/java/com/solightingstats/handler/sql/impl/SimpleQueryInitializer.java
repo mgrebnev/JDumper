@@ -34,8 +34,6 @@ public class SimpleQueryInitializer implements QueryInitializer {
         return getFirstPartQuery(tableName,tableColumns) + getSecondPart(tableColumns,data);
     }
 
-
-
     private String getFirstPartQuery(String table, List<EntityColumn> columns){
         return "INSERT INTO " 
                 + table + " (" 

@@ -2,58 +2,47 @@ package com.solightingstats;
 
 import com.solightingstats.environments.DatabaseEnvironments;
 import com.solightingstats.environments.resolvers.DatabaseEnvironmentsResolver;
-import com.solightingstats.handler.sql.QueryInitializer;
-import com.solightingstats.handler.sql.impl.SimpleQueryInitializer;
-import com.solightingstats.handler.sql.model.EntityColumn;
-import com.solightingstats.handler.sql.model.EntityInfo;
-import com.solightingstats.handler.sql.model.enums.ColumnType;
-import com.solightingstats.model.ExportTable;
-import com.solightingstats.resolvers.files.FileTablesResolver;
-import com.solightingstats.utils.FileUtil;
-import java.io.File;
+import com.solightingstats.handler.app.OperationHandler;
+import com.solightingstats.handler.app.enums.Operation;
+import com.solightingstats.handler.app.enums.OperationResult;
+import com.solightingstats.handler.app.impl.TableListInitializationHandler;
+import com.solightingstats.handler.jdbc.JdbcConnectionFactory;
+import com.solightingstats.resolvers.console.ApplicationArgumentsResolver;
+
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
-    public static void main(String[] args) throws IOException, SQLException {
-        QueryInitializer queryInitializer = new SimpleQueryInitializer();
+    private static final Map<Operation,OperationHandler> defaultApplicationHandlers = new HashMap<>();
+    
+    static {
+        OperationHandler tableInitializerHandler = new TableListInitializationHandler();
         
-        queryInitializer.setStringValuesWrapper("'");
-        queryInitializer.setTableNameWrapper("");
+        defaultApplicationHandlers.put(tableInitializerHandler.getOperation(), tableInitializerHandler);
+    }
+    
+    public static void main(String[] args) throws Exception {
+        args = new String[]{"-i"};
+        try {
+            final DatabaseEnvironments environments = DatabaseEnvironmentsResolver.getEnvironments();
+            final Connection connection = JdbcConnectionFactory.getConnection(environments);
 
-        EntityColumn firstColumn = new EntityColumn();
-        firstColumn.setName("ID");
-        firstColumn.setType(ColumnType.INTEGER);
-        
-        EntityColumn secondColumn = new EntityColumn();
-        secondColumn.setName("TASK_DESCRIPTION");
-        secondColumn.setType(ColumnType.STRING);        
-        
-        EntityColumn thirdColumn = new EntityColumn();
-        thirdColumn.setName("STATUS");
-        thirdColumn.setType(ColumnType.BOOLEAN);
-
-        EntityInfo entityInfo = new EntityInfo();
-        entityInfo.setTableName("PEOPLE");
-        entityInfo.setColumns(Arrays.asList(firstColumn,secondColumn,thirdColumn));
-        
-        List<String> rowData = Arrays.asList("1","DVER SDELAL","FALSE");
-
-        String resultQuery = queryInitializer.getInsertQuery(entityInfo,rowData);
-        
-        
-        File jsonTableFile = new File(FileUtil.getCurrentPath() + "/tables.data");
-        /*List<String> data = FileUtil.getAllLines(jsonTableFile);
-        List<ExportTable> tables = FileTablesResolver.getTables(data);
-        for (ExportTable table: tables)
-            System.out.println(table.getName());*/
-        DatabaseEnvironments environments = DatabaseEnvironmentsResolver.getEnvironments();
-        System.out.println(environments.getUrl());
-        System.out.println(environments.getClassName());
-        System.out.println(environments.getUsername());
-        System.out.println(environments.getPassword());
-        System.out.println(environments.getSchema());
+            List<Operation> currentOperations = ApplicationArgumentsResolver.resolve(args);
+            currentOperations.forEach(operation -> {
+                OperationHandler currentOperationHandler = defaultApplicationHandlers.get(operation);
+                OperationResult operationResult = currentOperationHandler.execute(environments,connection);
+                
+                System.out.println(operationResult);
+            });
+            
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error");
+        }
     }
 }

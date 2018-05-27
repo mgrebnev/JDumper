@@ -4,5 +4,6 @@ public enum OperationResult {
     OK,
     SQL_ERROR,
     DATABASE_CONNECTION_FAIL,
-    FILE_READ_WRITE_ERROR
+    FILE_READ_WRITE_ERROR,
+    UNKNOWN_ERROR
 }

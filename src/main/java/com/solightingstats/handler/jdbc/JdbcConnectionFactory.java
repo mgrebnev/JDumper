@@ -14,6 +14,7 @@ public class JdbcConnectionFactory {
         props.setProperty("driver-class-name",environments.getClassName());
         props.setProperty("username",environments.getUsername());
         props.setProperty("password",environments.getPassword());
+        props.setProperty("url",environments.getUrl());
         
         return DriverManager.getConnection(environments.getUrl(),props);
     }
