@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DatabaseEnvironments {
     private String url;
+    private String schema;
     private String className;
     private String username;
     private String password;

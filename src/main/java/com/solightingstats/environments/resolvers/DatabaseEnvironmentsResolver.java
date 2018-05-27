@@ -25,7 +25,9 @@ public class DatabaseEnvironmentsResolver {
             
             switch (propertyName){
                 case "url": 
-                    { environments.setUrl(propertyValue.replaceAll(" ","")); break; }
+                    { environments.setUrl(propertyValue.replaceAll(" ","")); break; }                
+                case "schema": 
+                    { environments.setSchema(propertyValue); break; }
                 case "username": 
                     { environments.setUsername(propertyValue); break; }
                 case "password":

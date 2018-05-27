@@ -54,5 +54,6 @@ public class Main {
         System.out.println(environments.getClassName());
         System.out.println(environments.getUsername());
         System.out.println(environments.getPassword());
+        System.out.println(environments.getSchema());
     }
 }
