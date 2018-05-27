@@ -1,8 +1,12 @@
 package com.solightingstats.utils;
 
+import com.solightingstats.Main;
+
 import java.io.File;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +26,20 @@ public class FileUtil {
                         .collect(Collectors.joining());
         }catch (Exception ex){
             throw new RuntimeException(ex);
+        }
+    }
+    
+    public static String getCurrentPath(){
+        try {
+            return Paths.get(Main.class
+                                 .getProtectionDomain()
+                                 .getCodeSource()
+                                 .getLocation()
+                                 .toURI())
+                        .getParent()
+                        .toString();
+        }catch (Exception ex){
+            return "";
         }
     }
 }

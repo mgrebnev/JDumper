@@ -1,5 +1,7 @@
 package com.solightingstats;
 
+import com.solightingstats.environments.DatabaseEnvironments;
+import com.solightingstats.environments.resolvers.DatabaseEnvironmentsResolver;
 import com.solightingstats.handler.sql.QueryInitializer;
 import com.solightingstats.handler.sql.impl.SimpleQueryInitializer;
 import com.solightingstats.handler.sql.model.EntityColumn;
@@ -40,13 +42,17 @@ public class Main {
         List<String> rowData = Arrays.asList("1","DVER SDELAL","FALSE");
 
         String resultQuery = queryInitializer.getInsertQuery(entityInfo,rowData);
-
-        ClassLoader classLoader = Main.class.getClassLoader();
         
-        File jsonTableFile = new File(classLoader.getResource("data/tables.data").getFile());
-        List<String> data = FileUtil.getAllLines(jsonTableFile);
+        
+        File jsonTableFile = new File(FileUtil.getCurrentPath() + "/tables.data");
+        /*List<String> data = FileUtil.getAllLines(jsonTableFile);
         List<ExportTable> tables = FileTablesResolver.getTables(data);
         for (ExportTable table: tables)
-            System.out.println(table.getName());
+            System.out.println(table.getName());*/
+        DatabaseEnvironments environments = DatabaseEnvironmentsResolver.getEnvironments();
+        System.out.println(environments.getUrl());
+        System.out.println(environments.getClassName());
+        System.out.println(environments.getUsername());
+        System.out.println(environments.getPassword());
     }
 }
