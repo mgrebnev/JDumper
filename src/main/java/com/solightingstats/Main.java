@@ -6,16 +6,16 @@ import com.solightingstats.handler.sql.model.EntityColumn;
 import com.solightingstats.handler.sql.model.EntityInfo;
 import com.solightingstats.handler.sql.model.enums.ColumnType;
 import com.solightingstats.model.ExportTable;
-import com.solightingstats.resolvers.json.JsonTablesFileResolver;
+import com.solightingstats.resolvers.files.FileTablesResolver;
 import com.solightingstats.utils.FileUtil;
-
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SQLException {
         QueryInitializer queryInitializer = new SimpleQueryInitializer();
         
         queryInitializer.setStringValuesWrapper("'");
@@ -37,17 +37,16 @@ public class Main {
         entityInfo.setTableName("PEOPLE");
         entityInfo.setColumns(Arrays.asList(firstColumn,secondColumn,thirdColumn));
         
-        
         List<String> rowData = Arrays.asList("1","DVER SDELAL","FALSE");
-        
+
         String resultQuery = queryInitializer.getInsertQuery(entityInfo,rowData);
 
         ClassLoader classLoader = Main.class.getClassLoader();
         
-        File jsonTableFile = new File(classLoader.getResource("json/tables.json").getFile());
-        String text = FileUtil.getText(jsonTableFile);
-        List<ExportTable> tables = JsonTablesFileResolver.getTables(text);
+        File jsonTableFile = new File(classLoader.getResource("data/tables.data").getFile());
+        List<String> data = FileUtil.getAllLines(jsonTableFile);
+        List<ExportTable> tables = FileTablesResolver.getTables(data);
         for (ExportTable table: tables)
-            System.out.println(table.getId() + " " + table.getName());
+            System.out.println(table.getName());
     }
 }
